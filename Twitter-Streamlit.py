@@ -1,39 +1,40 @@
 import pandas as pd
-import numpy as np
-import seaborn as sns
 import snscrape.modules.twitter as sntwitter
 import streamlit as st
 from pymongo import MongoClient
 import certifi
 
+#Creating a heading to be displayed on the app 
 st.markdown('# Twitter Analytics')
 
+#Setting the session_state to 0
 if 'a_counter' not in st.session_state:
     st.session_state['a_counter'] = 0
 
+#Receiving the input from user - hastag 
 input_data = st.text_input('Enter the #hashtag')
 
+#Receiving other inputs from user - from, to date & number of tweets to be retreived 
 from_date = st.date_input(label='From')
 to_date = st.date_input(label='Until')
-tweet_count = st.slider('No of Tweets', min_value=0, max_value=10000, step=10)
+tweet_count = st.slider('No of Tweets', min_value=0, max_value=100000, step=50)
 
+#Providing a display button for the user to fetch data 
 button = st.button('Display')
 
+#Creating the workflow to be carried out when the button is clicked
 if button:
     'Fetching the data...'
     st.session_state['a_counter'] += 1
-    a = sntwitter.TwitterHashtagScraper(
-        f'#{input_data} since:{from_date} until:{to_date}').get_items()
+    a = sntwitter.TwitterHashtagScraper(f'#{input_data} since:{from_date} until:{to_date}').get_items()
     tweets_container = []
     for i, tweet in enumerate(a):
         if i > tweet_count:
             break
-        tweets_container.append([tweet.date, tweet.id, tweet.content, tweet.url,
-                                 tweet.likeCount, tweet.replyCount, tweet.retweetCount,
+        tweets_container.append([tweet.date, tweet.id, tweet.content, tweet.url, tweet.likeCount, tweet.replyCount, tweet.retweetCount, 
                                  tweet.lang, tweet.source])
-        tweets_df = pd.DataFrame(tweets_container, columns=['Date', 'ID', 'Content', 'URL',
-                                                            'No of likes', 'No of replies', 'No of retweet',
-                                                            'Language', 'Source'])
+        tweets_df = pd.DataFrame(tweets_container, columns=['Date', 'ID', 'Content', 'URL', 'No of likes', 'No of replies', 
+                                                             'No of retweet', 'Language', 'Source'])
     st.dataframe(tweets_df)
 
     '...and we\'re done!'
@@ -55,8 +56,6 @@ if button:
     csv_file = convert_df_csv(tweets_df)
     json_file = convert_df_json(tweets_df)
 
-    st.download_button(label="Download the data as CSV?",
-                       data=csv_file, file_name='tweet_data.csv', mime='text/csv')
-    st.download_button(label="Download the data as JSON?",
-                       data=json_file, file_name='tweet_data.json')
+    st.download_button(label="Download the data as CSV?",data=csv_file, file_name='tweet_data.csv', mime='text/csv')
+    st.download_button(label="Download the data as JSON?",data=json_file, file_name='tweet_data.json')
     st.button('Post the data to MongoDB?', on_click=post_mongo(tweets_df))
