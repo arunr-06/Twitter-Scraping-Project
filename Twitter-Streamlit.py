@@ -46,7 +46,7 @@ if button:
 
     def post_mongo(df):
         ca = certifi.where()
-        pym = MongoClient('mongodb://Guvi:guvidw34@ac-xaisubg-shard-00-00.5ztguao.mongodb.net:27017,ac-xaisubg-shard-00-01.5ztguao.mongodb.net:27017,ac-xaisubg-shard-00-02.5ztguao.mongodb.net:27017/?ssl=true&replicaSet=atlas-tjrj1s-shard-0&authSource=admin&retryWrites=true&w=majority', tlsCAFile=ca)
+        pym = MongoClient('mongodb://Guvi:@ac-xaisubg-shard-00-00.5ztguao.mongodb.net:27017,ac-xaisubg-shard-00-01.5ztguao.mongodb.net:27017,ac-xaisubg-shard-00-02.5ztguao.mongodb.net:27017/?ssl=true&replicaSet=atlas-tjrj1s-shard-0&authSource=admin&retryWrites=true&w=majority', tlsCAFile=ca)
         pym1 = pym['Twitter_Scraping']
         pym2 = pym1['Collection4']
         df1 = df.to_dict('records')
